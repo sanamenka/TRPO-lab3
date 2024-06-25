@@ -1,5 +1,6 @@
 #include "calculationbyfolder.h"
 
+
 QMap<QString, qint64> CalculationByFolder::calculate(QString directory, QString mapCatalog, int level)
 {
     QMap<QString, qint64> map;
@@ -36,6 +37,5 @@ QMap<QString, qint64> CalculationByFolder::calculate(QString directory, QString 
 
     if (!level)
         this->cd(directory);
-
     return map;
 }

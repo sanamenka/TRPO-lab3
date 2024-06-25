@@ -4,7 +4,7 @@
 
 class Context {
 public:
-    Context (CalculationStrategy* method):strategy(strategy) {}
+    Context (CalculationStrategy* method = nullptr):strategy(strategy) {}
 
     QMap<QString, qint64> calculate(QString directory);
     void setStrategy(CalculationStrategy* ptrmethod);
