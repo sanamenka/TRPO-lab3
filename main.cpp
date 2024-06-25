@@ -14,34 +14,41 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    std::string string;
-    CalculationByFolder* byfolder = new CalculationByFolder;
-    CalculationByFileType* byfiletype = new CalculationByFileType;
-    Context* calculator = new Context();
-    QMap<QString, qint64> map;
+    std::string mystring; //строка директории
+    CalculationByFolder* byfolder = new CalculationByFolder; // указатель на стратегию по папкам
+    CalculationByFileType* byfiletype = new CalculationByFileType; // указатель на стратегию по типам
+    Context* calculator = new Context(); // создаем контекст
+    QMap<QString, qint64> map; // map хранит результаты вычислений
 
+    // устанавливаем необходимую стратегию
     calculator->setStrategy(byfolder);
-    //calculator->setStrategy(byfiletype);
+    calculator->setStrategy(byfiletype);
+
     std::cout << "Enter directory for explore" << std::endl;
-    std::cin >> string;
-    map = calculator->calculate(string.c_str());
+    std::cin >> mystring;
+    //контекст получил вызов и делегировал его объекту конкретной стратегии
+    map = calculator->calculate(mystring.c_str()); // c_str() формирует массив строк и возвращает указатель на него
 
-    qint64 size = 0;
+    qint64 globalsize = 0; // в переменной globalsize храним общий размер всех файлов
     foreach (const qint64 value, map.values())
-        size += value;
+        globalsize += value;
 
-    qDebug() << "Map > " << map.values();
+    qDebug() << map; // выводим результат
     qDebug() << Qt::endl;
+
+    // цикл для вывода информации о каждом элементе
+    // i - текущий элемент, содержащий ключ и значение. перебираем все элементы map
     for (auto i = map.cbegin(), end = map.cend(); i != end; ++i)
     {
-        if (size != 0) {
-            if ((i.value() * 100000 / size) >= 10)
-                qDebug() << (i.key()) << ": " <<  round(((double)i.value() * 10000 / size))/100 << "%";
-            else
+        if (globalsize != 0)
+        {
+            if ((i.value() * 100000 / globalsize) >= 10) // если >= 0,01%, то выводим с обозначением процентного соотношения
+                qDebug() << (i.key()) << ": " <<  round(((double)i.value() * 10000 / globalsize))/100 << "%";
+            else // иначе сравниваем с нулем
                 if (i.value() != 0)
-                    qDebug() << (i.key()) << ": " <<  " < 0.01" << "%";
+                    qDebug() << (i.key()) << ": " <<  " < 0.01" << "%"; // если занимается меньше 0,01% выводим информацию об этом
                 else
-                    qDebug() << (i.key()) << ": " <<  " 0 ";
+                    qDebug() << (i.key()) << ": " <<  " 0 "; // иначе выводим 0
         }
         else
             qDebug() << (i.key()) << ": " <<  " 0 ";
